@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin Brahma Élevage</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1c2a22;background:#f3f5f1}
+button,input,select,textarea{font-family:inherit;font-size:14px}
+.app{display:flex;flex-wrap:wrap;min-height:100vh}
+.side{flex:0 0 240px;background:#154a30;padding:24px 16px;display:flex;flex-direction:column;gap:6px}
+.logo{color:#fff;font-weight:700;font-size:20px;padding:0 14px 4px}
+.role{color:#9fc4ae;font-size:13px;padding:0 14px 18px}
+.nav{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:15px;color:#cfe3d6;background:none;border:0;cursor:pointer;text-align:left;min-height:44px}
+.nav.on{background:#fff;color:#154a30;font-weight:700}
+.nav .n{margin-left:auto;background:#f0b429;color:#3a2a00;border-radius:999px;font-size:12px;font-weight:700;padding:2px 8px}
+.out{margin-top:auto;color:#9fc4ae;font-size:13px;padding:10px 14px;background:none;border:0;cursor:pointer;text-align:left}
+.main{flex:999 1 560px;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-size:28px}
+.card{background:#fff;border-radius:14px;padding:20px;border:1px solid #e1e6e0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.lbl{font-size:13px;color:#5d6b63}
+.kpi{font-size:32px;font-weight:700;color:#154a30}
+.sub{font-size:13px;color:#5d6b63}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.flex{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.chip{border:1px solid #cfd8d1;background:#fff;border-radius:999px;padding:7px 14px;min-height:36px;cursor:pointer}
+.chip.on{background:#154a30;color:#fff;border-color:#154a30}
+.btn{background:#154a30;color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;min-height:44px;cursor:pointer}
+.btn.g{background:#fff;color:#154a30;border:1px solid #154a30}
+.btn.r{background:#fff;color:#a4231d;border:1px solid #a4231d}
+.btn.s{padding:6px 12px;min-height:36px}
+.btn:disabled{opacity:.5;cursor:default}
+.tag{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#e3efe6;color:#154a30;white-space:nowrap;display:inline-block}
+.tag.o{background:#fdf0d8;color:#8a5a00}
+.tag.r{background:#fbe3e0;color:#a4231d}
+.tag.n{background:#eceeeb;color:#5d6b63}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #edf0ec;font-size:14px}
+.row.first{border-top:0}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:#5d6b63;font-weight:500;padding:10px 12px;border-bottom:1px solid #e1e6e0;white-space:nowrap}
+td{padding:12px;border-bottom:1px solid #edf0ec}
+tr.cl{cursor:pointer}
+tr.sel td{background:#f0f6f2}
+input,select,textarea{padding:10px 12px;border:1px solid #cfd8d1;border-radius:10px;background:#fff;min-height:44px;color:#1c2a22;width:100%}
+.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5d6b63}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #edf0ec;font-size:14px;cursor:pointer}
+.sw{width:44px;height:26px;border-radius:13px;background:#cfd8d1;position:relative;flex:0 0 auto}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.sw.on{background:#154a30}
+.sw.on::after{left:21px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:180px}
+.bars div{flex:1;background:#b9d6c3;border-radius:6px 6px 0 0;min-height:2px;position:relative}
+.bars div:last-child{background:#154a30}
+.bars span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:11px;color:#5d6b63}
+.stack{display:flex;height:16px;border-radius:8px;overflow:hidden}
+.login{max-width:380px;margin:12vh auto;padding:0 16px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1c2a22;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:9;max-width:90vw}
+@media(max-width:820px){.side{flex:1 1 100%;flex-direction:row;flex-wrap:wrap;padding:12px;gap:4px}.logo,.role{display:none}.out{margin:0 0 0 auto}.main{padding:18px 16px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const URL_SB = 'https://pzbudrghdovmbtmzomhc.supabase.co';
+const CLE_SB = 'sb_publishable_Ky9dbClWX--xyXkOjPAtwA_-S6ue0E6';
+const ADMIN_EMAIL = 'oumardiallo2510@gmail.com';
+const sb = supabase.createClient(URL_SB, CLE_SB);
+const root = document.getElementById('root');
+
+const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fcfa = n => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(n) + ' F';
+const JOUR = 864e5;
+
+let demarre = false, D = null, vue = 'tableau', periode = 7, filtre = 'tous', plan = 'tous', recherche = '', sel = null, chargement = false;
+
+function toast(m) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = m;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+async function api(action, p = {}) {
+  const { data, error } = await sb.functions.invoke('admin-api', { body: { action, ...p } });
+  if (error) {
+    let msg = 'Erreur de connexion';
+    try { msg = (await error.context.json()).erreur || msg; } catch {}
+    throw new Error(msg);
+  }
+  if (data && data.erreur) throw new Error(data.erreur);
+  return data;
+}
+
+async function agir(action, p, ok) {
+  try {
+    await api(action, p);
+    toast(ok || 'Fait');
+    await charger();
+  } catch (e) { toast(e.message); }
+}
+
+function ago(d) {
+  if (!d) return 'Jamais';
+  const j = Math.floor((Date.now() - new Date(d)) / JOUR);
+  if (j <= 0) return "Aujourd'hui";
+  if (j === 1) return 'Hier';
+  return 'Il y a ' + j + ' jours';
+}
+const actif = u => u.derniere && Date.now() - new Date(u.derniere) < 7 * JOUR;
+const inactif = u => !u.derniere || Date.now() - new Date(u.derniere) > 30 * JOUR;
+
+const cfg = (k, d) => ({ ...d, ...((D && D.config && D.config[k]) || {}) });
+const tarifs = () => {
+  const c = (D && D.config && D.config.tarifs) || {};
+  return { pro: { mois: 990, an: 10810.8, ...(c.pro || {}) }, plus: { mois: 1250, an: 13500, ...(c.plus || {}) } };
+};
+
+function ecranConnexion(msg) {
+  root.innerHTML = `<div class="login"><div class="card">
+    <h1 style="font-size:24px">Admin Brahma Élevage</h1>
+    <div class="sub">Accès réservé à l'administrateur.</div>
+    ${msg ? `<div class="tag r" style="white-space:normal">${E(msg)}</div>` : ''}
+    <button class="btn" onclick="google()">Continuer avec Google</button>
+    <div class="sub" style="text-align:center">ou</div>
+    <div class="f">E-mail<input id="l-mail" type="email" autocomplete="username"></div>
+    <div class="f">Mot de passe<input id="l-mdp" type="password" autocomplete="current-password"></div>
+    <button class="btn g" onclick="connexion()">Se connecter</button>
+  </div></div>`;
+}
+async function google() {
+  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+  if (error) ecranConnexion(error.message);
+}
+async function connexion() {
+  demarre = false;
+  const { error } = await sb.auth.signInWithPassword({ email: document.getElementById('l-mail').value.trim(), password: document.getElementById('l-mdp').value });
+  if (error) return ecranConnexion('Identifiants incorrects');
+  demarrer();
+}
+async function deconnexion() {
+  await sb.auth.signOut();
+  D = null;
+  demarre = false;
+  ecranConnexion();
+}
+
+async function charger() {
+  chargement = true;
+  try {
+    D = await api('tout');
+  } catch (e) {
+    chargement = false;
+    if (/Accès refusé/.test(e.message)) {
+      await sb.auth.signOut();
+      return ecranConnexion('Ce compte n\'a pas accès à l\'administration.');
+    }
+    toast(e.message);
+    if (!D) return ecranConnexion(e.message);
+  }
+  chargement = false;
+  afficher();
+}
+
+async function demarrer() {
+  if (demarre) return;
+  const { data } = await sb.auth.getSession();
+  if (!data.session) return ecranConnexion();
+  demarre = true;
+  if ((data.session.user.email || '').toLowerCase() !== ADMIN_EMAIL) {
+    demarre = false;
+    await sb.auth.signOut();
+    return ecranConnexion('Ce compte n\'a pas accès à l\'administration.');
+  }
+  root.innerHTML = '<div class="login"><div class="sub">Chargement…</div></div>';
+  charger();
+}
+
+function nav(v) { vue = v; if (v !== 'utilisateurs') sel = null; afficher(); window.scrollTo(0, 0); }
+
+function afficher() {
+  if (!D) return;
+  const att = D.demandes.filter(d => d.statut === 'en_attente').length;
+  const item = (k, n, extra) => `<button class="nav ${vue === k ? 'on' : ''}" onclick="nav('${k}')">${n}${extra ? `<span class="n">${extra}</span>` : ''}</button>`;
+  const vues = { tableau: vTableau, utilisateurs: vUtilisateurs, abonnements: vAbonnements, reglages: vReglages };
+  root.innerHTML = `<div class="app">
+    <div class="side">
+      <div class="logo">Brahma Élevage</div><div class="role">Espace administrateur</div>
+      ${item('tableau', 'Tableau de bord')}${item('utilisateurs', 'Utilisateurs')}${item('abonnements', 'Abonnements', att || '')}${item('reglages', 'Contenu et réglages', D.signalements.length || '')}
+      <button class="out" onclick="deconnexion()">Se déconnecter</button>
+    </div>
+    <div class="main">${vues[vue]()}</div></div>`;
+}
+
+function vTableau() {
+  const U = D.users, now = Date.now();
+  const nAct = U.filter(actif).length, nIna = U.filter(inactif).length;
+  const pro = U.filter(u => u.plan === 'pro').length, plus = U.filter(u => u.plan === 'plus').length, grat = U.length - pro - plus;
+  const T = tarifs();
+  const revenu = pro * T.pro.mois + plus * T.plus.mois;
+  const debutMois = new Date(); debutMois.setDate(1); debutMois.setHours(0, 0, 0, 0);
+  const nouveaux = U.filter(u => new Date(u.cree) >= debutMois).length;
+  const pc = n => U.length ? Math.round(n / U.length * 100) : 0;
+  const nb = periode === 7 ? 12 : periode === 30 ? 12 : 12;
+  const pas = periode === 7 ? 7 * JOUR : periode === 30 ? 30 * JOUR : 30 * JOUR;
+  const bornes = []; for (let i = nb - 1; i >= 0; i--) bornes.push([now - (i + 1) * pas, now - i * pas]);
+  const serie = bornes.map(([a, b]) => U.filter(u => { const t = new Date(u.cree).getTime(); return t > a && t <= b; }).length);
+  const max = Math.max(1, ...serie);
+  const unite = periode === 7 ? 'semaine' : 'mois';
+  const recents = [
+    ...U.map(u => ({ t: u.cree, m: `Nouvelle inscription · ${E(u.ville || u.nom || u.email)}` })),
+    ...D.demandes.map(d => ({ t: d.date_demande, m: `Demande ${E(d.plan)} · ${d.moyen === 'wave' ? 'Wave' : 'Orange Money'}` }))
+  ].sort((a, b) => new Date(b.t) - new Date(a.t)).slice(0, 5);
+  const att = D.demandes.filter(d => d.statut === 'en_attente').length;
+  return `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center">
+    <div><h1>Tableau de bord</h1><div class="sub">Mise à jour : ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="chip ${periode === 7 ? 'on' : ''}" onclick="periode=7;afficher()">Par semaine</button><button class="chip ${periode === 30 ? 'on' : ''}" onclick="periode=30;afficher()">Par mois</button><button class="btn g s" onclick="charger()">Actualiser</button></div></div>
+  <div class="grid">
+    <div class="card"><div class="lbl">Utilisateurs inscrits</div><div class="kpi">${U.length}</div><div class="sub">+${nouveaux} ce mois</div></div>
+    <div class="card"><div class="lbl">Actifs (7 derniers jours)</div><div class="kpi">${nAct}</div><div class="sub">${pc(nAct)} % des inscrits</div></div>
+    <div class="card"><div class="lbl">Inactifs (30 jours et plus)</div><div class="kpi" style="color:#a4231d">${nIna}</div><div class="sub">${pc(nIna)} % des inscrits</div></div>
+    <div class="card"><div class="lbl">Revenu mensuel estimé</div><div class="kpi">${fcfa(revenu)}</div><div class="sub">${pro} Pro · ${plus} Plus</div></div>
+  </div>
+  <div class="flex">
+    <div class="card" style="flex:2 1 420px"><b>Nouveaux inscrits par ${unite}</b>
+      <div class="bars" style="margin-top:22px">${serie.map(n => `<div style="height:${Math.max(2, n / max * 100)}%"><span>${n}</span></div>`).join('')}</div>
+      <div class="sub" style="display:flex;justify-content:space-between"><span>Il y a ${nb} ${unite === 'mois' ? 'mois' : 'sem.'}</span><span>${unite === 'mois' ? 'Ce mois' : 'Cette semaine'}</span></div></div>
+    <div class="card" style="flex:1 1 280px"><b>Répartition des plans</b>
+      <div class="stack" style="margin:8px 0"><div style="width:${pc(grat)}%;background:#cfd8d1"></div><div style="width:${pc(pro)}%;background:#7fb496"></div><div style="width:${pc(plus)}%;background:#154a30"></div></div>
+      <div class="row first"><span>Gratuit</span><b>${grat}</b></div><div class="row"><span>Pro</span><b>${pro}</b></div><div class="row"><span>Plus</span><b>${plus}</b></div></div>
+  </div>
+  <div class="flex">
+    <div class="card" style="flex:1 1 320px"><div style="display:flex;justify-content:space-between"><b>À traiter</b></div>
+      <button class="row first" style="background:none;border:0;cursor:pointer;width:100%" onclick="nav('abonnements')"><span>Demandes d'abonnement en attente</span><b>${att}</b></button>
+      <button class="row" style="background:none;border:0;border-top:1px solid #edf0ec;cursor:pointer;width:100%" onclick="nav('reglages')"><span>Annonces signalées</span><b>${D.signalements.length}</b></button></div>
+    <div class="card" style="flex:1 1 320px"><b>Activité récente</b>${recents.map((r, i) => `<div class="row ${i ? '' : 'first'}"><span>${r.m}</span><span class="sub">${ago(r.t)}</span></div>`).join('') || '<div class="sub">Rien pour le moment.</div>'}</div>
+  </div>`;
+}
+
+function listeFiltree() {
+  const q = recherche.trim().toLowerCase();
+  return D.users.filter(u =>
+    (filtre === 'tous' || (filtre === 'actifs' && actif(u)) || (filtre === 'inactifs' && inactif(u)) || (filtre === 'suspendus' && u.banni)) &&
+    (plan === 'tous' || u.plan === plan) &&
+    (!q || [u.nom, u.email, u.ville].join(' ').toLowerCase().includes(q))
+  ).sort((a, b) => new Date(b.cree) - new Date(a.cree));
+}
+
+function vUtilisateurs() {
+  const U = D.users, l = listeFiltree().slice(0, 200);
+  const c = f => f === 'tous' ? U.length : f === 'actifs' ? U.filter(actif).length : f === 'inactifs' ? U.filter(inactif).length : U.filter(u => u.banni).length;
+  const u = sel && D.users.find(x => x.id === sel);
+  const tp = p => p === 'plus' ? '<span class="tag">Plus</span>' : p === 'pro' ? '<span class="tag">Pro</span>' : '<span class="tag n">Gratuit</span>';
+  const st = x => (x.banni ? '<span class="tag n">Suspendu</span>' : inactif(x) ? '<span class="tag r">Inactif</span>' : actif(x) ? '<span class="tag">Actif</span>' : '<span class="tag o">Peu actif</span>') + (x.verifie ? ' <span class="tag o">Certifié</span>' : '');
+  return `<div><h1>Utilisateurs</h1><div class="sub">${U.length} comptes</div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <input id="rech" placeholder="Rechercher par nom, e-mail, ville" value="${E(recherche)}" oninput="recherche=this.value;majListe()" style="flex:1 1 240px;width:auto">
+    ${['tous', 'actifs', 'inactifs', 'suspendus'].map(f => `<button class="chip ${filtre === f ? 'on' : ''}" onclick="filtre='${f}';afficher()">${f[0].toUpperCase() + f.slice(1)} · ${c(f)}</button>`).join('')}
+    <select style="width:auto" onchange="plan=this.value;afficher()"><option value="tous">Tous les plans</option><option value="gratuit" ${plan === 'gratuit' ? 'selected' : ''}>Gratuit</option><option value="pro" ${plan === 'pro' ? 'selected' : ''}>Pro</option><option value="plus" ${plan === 'plus' ? 'selected' : ''}>Plus</option></select></div>
+  <div class="flex">
+    <div class="card tw" style="flex:3 1 520px;padding:8px 8px 12px"><table><thead><tr><th>Utilisateur</th><th>Ville</th><th>Plan</th><th>Sujets</th><th>Dernière activité</th><th>Statut</th></tr></thead>
+      <tbody id="corps">${lignes(l, tp, st)}</tbody></table>
+      <div class="sub" style="padding:10px 12px 0">${listeFiltree().length > 200 ? '200 premiers résultats, affine la recherche.' : listeFiltree().length + ' résultat(s)'}</div></div>
+    ${u ? fiche(u) : '<div class="card" style="flex:1 1 300px"><div class="sub">Clique sur un utilisateur pour le gérer.</div></div>'}
+  </div>`;
+}
+function lignes(l, tp, st) {
+  return l.map(u => `<tr class="cl ${u.id === sel ? 'sel' : ''}" onclick="sel='${u.id}';afficher()"><td><b>${E(u.nom || '(sans nom)')}</b><div class="sub">${E(u.email)}</div></td><td>${E(u.ville)}</td><td>${tp(u.plan)}</td><td>${u.sujets}</td><td>${ago(u.derniere)}</td><td>${st(u)}</td></tr>`).join('') || '<tr><td colspan="6" class="sub">Aucun utilisateur.</td></tr>';
+}
+function majListe() {
+  const tp = p => p === 'plus' ? '<span class="tag">Plus</span>' : p === 'pro' ? '<span class="tag">Pro</span>' : '<span class="tag n">Gratuit</span>';
+  const st = x => (x.banni ? '<span class="tag n">Suspendu</span>' : inactif(x) ? '<span class="tag r">Inactif</span>' : actif(x) ? '<span class="tag">Actif</span>' : '<span class="tag o">Peu actif</span>') + (x.verifie ? ' <span class="tag o">Certifié</span>' : '');
+  document.getElementById('corps').innerHTML = lignes(listeFiltree().slice(0, 200), tp, st);
+}
+function fiche(u) {
+  const moi = u.email.toLowerCase() === ADMIN_EMAIL;
+  return `<div class="card" style="flex:1 1 300px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:18px">${E(u.nom || '(sans nom)')}</b>${u.banni ? '<span class="tag n">Suspendu</span>' : '<span class="tag">Actif</span>'}</div>
+    <div class="sub">${E(u.email)}<br>Inscrit le ${new Date(u.cree).toLocaleDateString('fr-FR')} · ${E(u.ville || 'ville inconnue')} · ${u.sujets} sujet(s)</div>
+    <div class="f">Plan<select id="f-plan"><option value="gratuit" ${u.plan === 'gratuit' ? 'selected' : ''}>Gratuit</option><option value="pro" ${u.plan === 'pro' ? 'selected' : ''}>Pro</option><option value="plus" ${u.plan === 'plus' ? 'selected' : ''}>Plus</option></select></div>
+    <button class="btn" onclick="agir('plan',{id:'${u.id}',plan:document.getElementById('f-plan').value},'Plan mis à jour')">Enregistrer le plan</button>
+    <div class="row first"><span>Éleveur certifié</span><span class="tog" style="border:0;padding:0" onclick="agir('verifie',{id:'${u.id}',valeur:${!u.verifie}},'Certification mise à jour')"><span class="sw ${u.verifie ? 'on' : ''}"></span></span></div>
+    <div class="f">Message à cet utilisateur<input id="f-mt" placeholder="Titre"><textarea id="f-mx" rows="2" placeholder="Message"></textarea></div>
+    <button class="btn g" onclick="envoyerA('${u.id}')">Envoyer le message</button>
+    ${moi ? '<div class="sub">C\'est ton compte : suspension et suppression désactivées.</div>' : `
+    <button class="btn g" onclick="if(confirm('${u.banni ? 'Réactiver' : 'Suspendre'} ce compte ?'))agir('suspendre',{id:'${u.id}',valeur:${!u.banni}},'Compte mis à jour')">${u.banni ? 'Réactiver le compte' : 'Suspendre le compte'}</button>
+    <button class="btn r" onclick="supprimer('${u.id}')">Supprimer le compte</button>`}
+  </div>`;
+}
+function supprimer(id) {
+  const u = D.users.find(x => x.id === id);
+  if (prompt('Supprime définitivement ' + (u.email || u.nom) + ' et toutes ses données.\nTape SUPPRIMER pour confirmer.') !== 'SUPPRIMER') return;
+  sel = null;
+  agir('supprimer', { id }, 'Compte supprimé');
+}
+function envoyerA(id) {
+  agir('message', { cible: id, titre: document.getElementById('f-mt').value, texte: document.getElementById('f-mx').value }, 'Message envoyé');
+}
+
+function vAbonnements() {
+  const T = tarifs(), U = D.users;
+  const pro = U.filter(u => u.plan === 'pro').length, plus = U.filter(u => u.plan === 'plus').length;
+  const att = D.demandes.filter(d => d.statut === 'en_attente'), his = D.demandes.filter(d => d.statut !== 'en_attente').slice(0, 30);
+  const mv = d => d.moyen === 'wave' ? 'Wave' : 'Orange Money';
+  return `<div><h1>Abonnements</h1></div>
+  <div class="grid">
+    <div class="card"><div class="lbl">Revenu mensuel estimé</div><div class="kpi">${fcfa(pro * T.pro.mois + plus * T.plus.mois)}</div></div>
+    <div class="card"><div class="lbl">Abonnés Pro</div><div class="kpi">${pro}</div></div>
+    <div class="card"><div class="lbl">Abonnés Plus</div><div class="kpi">${plus}</div></div>
+    <div class="card"><div class="lbl">Demandes en attente</div><div class="kpi" style="color:#8a5a00">${att.length}</div></div>
+  </div>
+  <div class="card tw" style="padding:8px 8px 12px"><div style="padding:12px 12px 4px"><b style="font-size:18px">Demandes en attente</b></div>
+    <table><thead><tr><th>Utilisateur</th><th>Plan</th><th>Durée</th><th>Montant</th><th>Paiement</th><th>Téléphone</th><th>Référence</th><th>Reçue</th><th></th></tr></thead><tbody>
+    ${att.map(d => `<tr><td><b>${E(d.nom || '(sans nom)')}</b><div class="sub">${E(d.email)}</div></td><td><span class="tag">${E(d.plan)}</span></td><td>${d.periode === 'an' ? 'Annuel' : 'Mensuel'}</td><td>${fcfa(d.montant)}</td><td>${mv(d)}</td><td>${E(d.telephone)}</td><td>${E(d.reference || '-')}</td><td>${ago(d.date_demande)}</td>
+      <td style="white-space:nowrap"><button class="btn s" onclick="agir('decider',{id:${d.id},decision:'valide'},'Abonnement activé')">Valider</button> <button class="btn r s" onclick="agir('decider',{id:${d.id},decision:'refuse'},'Demande refusée')">Refuser</button></td></tr>`).join('') || '<tr><td colspan="9" class="sub">Aucune demande en attente.</td></tr>'}
+    </tbody></table></div>
+  <div class="card tw" style="padding:8px 8px 12px"><div style="padding:12px 12px 4px"><b style="font-size:18px">Historique</b></div>
+    <table><thead><tr><th>Utilisateur</th><th>Plan</th><th>Montant</th><th>Décision</th><th>Date</th></tr></thead><tbody>
+    ${his.map(d => `<tr><td><b>${E(d.nom || '(sans nom)')}</b><div class="sub">${E(d.email)}</div></td><td><span class="tag">${E(d.plan)}</span></td><td>${fcfa(d.montant)}</td><td>${d.statut === 'valide' ? '<span class="tag">Validé</span>' : '<span class="tag r">Refusé</span>'}</td><td>${new Date(d.date_demande).toLocaleDateString('fr-FR')}</td></tr>`).join('') || '<tr><td colspan="5" class="sub">Rien pour le moment.</td></tr>'}
+    </tbody></table></div>`;
+}
+
+function vReglages() {
+  const T = tarifs(), B = cfg('bandeau', { actif: false, texte: '' }), P = cfg('paiement', { wave: '', orange: '' }), F = cfg('fonctions', { marche: true, messagerie: true, maintenance: false });
+  const tg = (k, n) => `<div class="tog" onclick="basculer('${k}')"><span>${n}</span><span class="sw ${F[k] ? 'on' : ''}"></span></div>`;
+  return `<div><h1>Contenu et réglages</h1><div class="sub">Les changements s'appliquent à l'app au prochain lancement.</div></div>
+  <div class="flex">
+  <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:16px">
+    <div class="card"><b style="font-size:18px">Message aux utilisateurs</b>
+      <div class="f">Destinataires<select id="m-cible"><option value="tous">Tous</option><option value="payants">Pro et Plus</option><option value="gratuits">Plan Gratuit</option><option value="pro">Pro seulement</option><option value="plus">Plus seulement</option></select></div>
+      <div class="f">Titre<input id="m-titre" maxlength="120"></div>
+      <div class="f">Message<textarea id="m-texte" rows="3" maxlength="1000"></textarea></div>
+      <button class="btn" onclick="agir('message',{cible:document.getElementById('m-cible').value,titre:document.getElementById('m-titre').value,texte:document.getElementById('m-texte').value},'Message envoyé')">Envoyer</button>
+      ${D.messages.length ? `<div class="sub" style="margin-top:6px">Derniers messages</div>${D.messages.slice(0, 5).map((m, i) => `<div class="row ${i ? '' : 'first'}"><span><b>${E(m.titre)}</b><br><span class="sub">${E(m.cible.length > 12 ? 'Un utilisateur' : m.cible)} · ${ago(m.created_at)}</span></span><button class="btn r s" onclick="agir('message_supprimer',{id:${m.id}},'Message retiré')">Retirer</button></div>`).join('')}` : ''}</div>
+    <div class="card"><b style="font-size:18px">Bandeau d'annonce dans l'accueil</b>
+      <div class="f">Texte affiché<input id="b-texte" value="${E(B.texte)}" maxlength="160"></div>
+      <div class="tog" onclick="document.getElementById('b-sw').classList.toggle('on')"><span>Afficher le bandeau</span><span id="b-sw" class="sw ${B.actif ? 'on' : ''}"></span></div>
+      <button class="btn g" onclick="agir('config',{cle:'bandeau',valeur:{actif:document.getElementById('b-sw').classList.contains('on'),texte:document.getElementById('b-texte').value}},'Bandeau enregistré')">Enregistrer</button></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:18px">Annonces signalées</b><span class="tag o">${D.signalements.length}</span></div>
+      ${D.signalements.map((s, i) => `<div class="row ${i ? '' : 'first'}"><span>${E(s.titre)} · ${s.nb} signalement(s)<br><span class="sub">${E(s.vendeur)} · ${E(s.statut)}</span></span><span style="display:flex;gap:6px"><button class="btn g s" onclick="agir('signalement',{annonce_id:${s.id},op:'garder'},'Annonce gardée')">Garder</button><button class="btn s" onclick="agir('signalement',{annonce_id:${s.id},op:'retirer'},'Annonce retirée')">Retirer</button></span></div>`).join('') || '<div class="sub">Aucun signalement.</div>'}</div>
+  </div>
+  <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:16px">
+    <div class="card"><b style="font-size:18px">Tarifs des plans (F)</b>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="f">Pro · mensuel<input id="t-pm" inputmode="decimal" value="${T.pro.mois}"></div><div class="f">Pro · annuel<input id="t-pa" inputmode="decimal" value="${T.pro.an}"></div>
+        <div class="f">Plus · mensuel<input id="t-lm" inputmode="decimal" value="${T.plus.mois}"></div><div class="f">Plus · annuel<input id="t-la" inputmode="decimal" value="${T.plus.an}"></div></div>
+      <b style="font-size:16px">Numéros de paiement</b>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="f">Wave<input id="p-w" value="${E(P.wave)}"></div><div class="f">Orange Money<input id="p-o" value="${E(P.orange)}"></div></div>
+      <button class="btn" onclick="enregistrerTarifs()">Enregistrer</button></div>
+    <div class="card"><b style="font-size:18px">Fonctionnalités</b>
+      ${tg('marche', 'Marché')}${tg('messagerie', 'Messagerie')}${tg('maintenance', 'Mode maintenance (bloque l\'app)')}</div>
+  </div></div>`;
+}
+function basculer(k) {
+  const F = cfg('fonctions', { marche: true, messagerie: true, maintenance: false });
+  F[k] = !F[k];
+  if (k === 'maintenance' && F[k] && !confirm('Activer la maintenance bloque l\'app pour tous les utilisateurs. Continuer ?')) return;
+  agir('config', { cle: 'fonctions', valeur: F }, 'Enregistré');
+}
+async function enregistrerTarifs() {
+  const n = id => Number(String(document.getElementById(id).value).replace(/\s/g, '').replace(',', '.'));
+  const v = { pro: { mois: n('t-pm'), an: n('t-pa') }, plus: { mois: n('t-lm'), an: n('t-la') } };
+  if ([v.pro.mois, v.pro.an, v.plus.mois, v.plus.an].some(x => !(x > 0))) return toast('Prix invalides');
+  try {
+    await api('config', { cle: 'tarifs', valeur: v });
+    await api('config', { cle: 'paiement', valeur: { wave: document.getElementById('p-w').value.trim(), orange: document.getElementById('p-o').value.trim() } });
+    toast('Tarifs enregistrés');
+    await charger();
+  } catch (e) { toast(e.message); }
+}
+
+sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_IN') setTimeout(demarrer, 0); });
+demarrer();
+</script>
+</body>
+</html>
